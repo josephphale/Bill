@@ -1,4 +1,4 @@
-# discount
+# bill
 
 ## Requirements
 

@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="user-1" author="Joseph">
+        <createTable tableName="user_type">
+            <column name="id" type="VARCHAR(128)">
+                <constraints primaryKey="true" primaryKeyName="user_type_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)" />
+        </createTable>
+        <createTable tableName="users">
+            <column name="id" type="VARCHAR(128)">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="full_name" type="VARCHAR(255)" />
+            <column name="customer_number" type="VARCHAR(255)" />
+            <column name="user_type" type="VARCHAR(128)" />
+            <column name="registration_date" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="user-2" author="Joseph">
+        <addUniqueConstraint columnNames="name"
+                             tableName="user_type"/>
+        <addUniqueConstraint columnNames="customer_number"
+                             tableName="users"/>
+    </changeSet>
+    <changeSet id="user-3" author="Joseph">
+        <addForeignKeyConstraint
+                baseTableName="users"
+                baseColumnNames="user_type" constraintName="users_user_type_FK"
+                referencedTableName="user_type"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="user-5" author="Joseph">
+        <addForeignKeyConstraint
+                baseTableName="sales_transaction"
+                baseColumnNames="user" constraintName="transaction_user_FK"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

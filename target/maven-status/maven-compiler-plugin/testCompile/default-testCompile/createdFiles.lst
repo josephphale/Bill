@@ -1,0 +1,3 @@
+com\jphale\discount\DiscountApplicationTests.class
+com\jphale\discount\user\UserServiceBeanTest.class
+com\jphale\discount\sales\SalesTransactionServiceBeanTest.class

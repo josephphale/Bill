@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SalesTransactionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">discount</a> &gt; <a href="index.source.html" class="el_package">com.jphale.discount.sales.service.implementation</a> &gt; <span class="el_source">SalesTransactionServiceImpl.java</span></div><h1>SalesTransactionServiceImpl.java</h1><pre class="source lang-java linenums">package com.jphale.discount.sales.service.implementation;
+
+import com.jphale.discount.sales.service.ISalesTransactionService;
+import com.jphale.discount.user.entity.User;
+import com.jphale.discount.user.models.UserTypeEnum;
+import com.jphale.discount.user.service.IUserService;
+import com.jphale.discount.sales.entity.SalesTransaction;
+import com.jphale.discount.sales.models.DiscountPercentageEnum;
+import com.jphale.discount.sales.models.SaleCategoryEnum;
+import com.jphale.discount.sales.repository.ISalesTransactionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
+@Service
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+public class SalesTransactionServiceImpl implements ISalesTransactionService {
+    private final ISalesTransactionRepository iSalesTransactionRepository;
+    private final IUserService iUserService;
+
+    @Override
+    public SalesTransaction createSalesTransaction(SalesTransaction transaction){
+<span class="nc" id="L28">        User user = iUserService.getUserByCustomerNumber(transaction.getUser().getCustomerNumber());</span>
+
+<span class="nc" id="L30">        String discountType = getDiscountTypeByUser(user);</span>
+<span class="nc" id="L31">        double discountAmount = getDiscount(transaction.getBill(), discountType, transaction.getSaleCategory());</span>
+<span class="nc" id="L32">        transaction.setUser(user);</span>
+<span class="nc" id="L33">        transaction.setDiscountType(discountType);</span>
+<span class="nc" id="L34">        transaction.setDiscountAmount(discountAmount);</span>
+<span class="nc" id="L35">        transaction.setAmountPaid(transaction.getBill()-discountAmount);</span>
+<span class="nc" id="L36">        transaction.setDate(new Date());</span>
+
+<span class="nc" id="L38">        return iSalesTransactionRepository.save(transaction);</span>
+    }
+
+    @Override
+    public List&lt;SalesTransaction&gt; getAllSalesTransactions(){
+<span class="nc" id="L43">        return iSalesTransactionRepository.findAll();</span>
+    }
+    
+    private String getDiscountTypeByUser(User user){
+<span class="nc" id="L47">        String discountType = &quot;NONE&quot;;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (user.getUserType().getName().equals(UserTypeEnum.EMPLOYEE.getName())){</span>
+<span class="nc" id="L49">            discountType = DiscountPercentageEnum.EMPLOYEE_DISCOUNT.name();</span>
+
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        } else if (user.getUserType().getName().equals(UserTypeEnum.AFFILIATE.getName())){</span>
+<span class="nc" id="L52">            discountType = DiscountPercentageEnum.AFFILIATE_DISCOUNT.name();</span>
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        } else if (user.getUserType().getName().equals(UserTypeEnum.CUSTOMER.getName())){</span>
+<span class="nc" id="L55">            LocalDate discountDate = LocalDate.now().minusYears(2);</span>
+<span class="nc" id="L56">            LocalDate registrationDate = user.getRegistrationDate().toInstant()</span>
+<span class="nc" id="L57">                    .atZone(ZoneId.systemDefault())</span>
+<span class="nc" id="L58">                    .toLocalDate();</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            if(discountDate.isAfter(registrationDate)){</span>
+<span class="nc" id="L60">                discountType = DiscountPercentageEnum.LONG_TERM_CUSTOMER_DISCOUNT.name();</span>
+            } 
+        }
+
+<span class="nc" id="L64">        return discountType;</span>
+    }
+
+    private double getDiscount(double bill, String discountType, String saleCategory){
+        double percentageDiscount;
+        double billDiscount;
+        double totalDiscount;
+        
+<span class="nc bnc" id="L72" title="All 4 branches missed.">        switch (discountType){</span>
+            case &quot;EMPLOYEE_DISCOUNT&quot;:
+<span class="nc" id="L74">                percentageDiscount = bill * (DiscountPercentageEnum.EMPLOYEE_DISCOUNT.getDiscount()/100);</span>
+<span class="nc" id="L75">                break;</span>
+            case &quot;AFFILIATE_DISCOUNT&quot;:
+<span class="nc" id="L77">                percentageDiscount = bill * (DiscountPercentageEnum.AFFILIATE_DISCOUNT.getDiscount()/100);</span>
+<span class="nc" id="L78">                break;</span>
+            case &quot;LONG_TERM_CUSTOMER_DISCOUNT&quot;:
+<span class="nc" id="L80">                percentageDiscount = bill * (DiscountPercentageEnum.LONG_TERM_CUSTOMER_DISCOUNT.getDiscount()/100);</span>
+<span class="nc" id="L81">                break;</span>
+            default:
+<span class="nc" id="L83">            percentageDiscount = 0.0;</span>
+            break;
+        }
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if(bill &gt;= 100){</span>
+<span class="nc" id="L88">            billDiscount = ((int)(bill / 100)) * 5;</span>
+        } else {
+<span class="nc" id="L90">            billDiscount = 0.0;</span>
+        }
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (saleCategory.equals(SaleCategoryEnum.GROCERY.getName())) {</span>
+<span class="nc" id="L94">            totalDiscount = billDiscount;</span>
+        } else {
+<span class="nc" id="L96">            totalDiscount = billDiscount + percentageDiscount;</span>
+        }
+
+<span class="nc" id="L99">        return totalDiscount;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

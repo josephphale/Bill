@@ -1,0 +1,12 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+discount,com.jphale.discount.user.api,UserApi,9,6,0,0,2,1,2,1,2,1
+discount,com.jphale.discount.sales.api,SalesApi,9,6,0,0,2,1,2,1,2,1
+discount,com.jphale.discount.sales.entity,SalesTransaction,173,0,14,0,12,0,29,0,22,0
+discount,com.jphale.discount.user.models,UserTypeEnum,48,0,0,0,8,0,3,0,3,0
+discount,com.jphale.discount.user.service.implementation,UserServiceImpl,15,6,0,0,3,1,3,1,3,1
+discount,com.jphale.discount,DiscountApplication,5,3,0,0,2,1,1,1,1,1
+discount,com.jphale.discount.user.entity,User,137,0,14,0,9,0,23,0,16,0
+discount,com.jphale.discount.user.entity,UserType,95,0,14,0,4,0,16,0,9,0
+discount,com.jphale.discount.sales.service.implementation,SalesTransactionServiceImpl,163,9,16,0,38,1,13,1,4,1
+discount,com.jphale.discount.sales.models,SaleCategoryEnum,59,0,0,0,9,0,3,0,3,0
+discount,com.jphale.discount.sales.models,DiscountPercentageEnum,48,0,0,0,8,0,3,0,3,0
